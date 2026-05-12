@@ -40,58 +40,59 @@ enum PaymentStatus {
 }
 
 model User {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   name        String
-  email       String   @unique
+  email       String    @unique
   password    String
   avatar      String?
-  role        Role     @default(BUYER)
-  isSeller    Boolean  @default(false)
-  sellerBio   String?  @db.Text
+  role        Role      @default(BUYER)
+  isSeller    Boolean   @default(false)
+  isVerified  Boolean   @default(false)
+  sellerBio   String?   @db.Text
   skills      String?
-  paymentQr   String?  @db.LongText
+  paymentQr   String?   @db.LongText
   college     String?
   githubUrl   String?
   linkedinUrl String?
-  isActive    Boolean  @default(true)
+  isActive    Boolean   @default(true)
   deletedAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   failedAttempts Int       @default(0)
   lockedUntil    DateTime?
   sessionVersion Int       @default(1)
 
   gigs         Gig[]
-  buyerOrders  Order[]  @relation("BuyerOrders")
-  sellerOrders Order[]  @relation("SellerOrders")
+  buyerOrders  Order[]       @relation("BuyerOrders")
+  sellerOrders Order[]       @relation("SellerOrders")
   reviews      Review[]
   settings     UserSettings?
 }
 
 model Gig {
-  id            String    @id @default(cuid())
-  title         String
-  description   String    @db.Text
-  thumbnail     String?   @db.LongText
-  category      String
-  techStack     String
-  status        GigStatus @default(DRAFT)
-  basicPrice    Int
-  basicDesc     String
-  standardPrice Int
-  standardDesc  String
-  premiumPrice  Int
-  premiumDesc   String
-  deliveryDays  Int       @default(7)
-  totalOrders   Int       @default(0)
-  rating        Float     @default(0)
+  id              String    @id @default(cuid())
+  title           String
+  description     String    @db.Text
+  thumbnail       String?   @db.LongText
+  category        String
+  techStack       String
+  status          GigStatus @default(DRAFT)
+  basicPrice      Int
+  basicDesc       String
+  standardPrice   Int
+  standardDesc    String
+  premiumPrice    Int
+  premiumDesc     String
+  deliveryDays    Int       @default(7)
+  totalOrders     Int       @default(0)
+  rating          Float     @default(0)
   freeDownloadUrl String?   @db.LongText
   demoUrl         String?   @db.LongText
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  seller   User    @relation(fields: [sellerId], references: [id])
+  seller   User     @relation(fields: [sellerId], references: [id])
   sellerId String
   orders   Order[]
   reviews  Review[]
@@ -108,11 +109,11 @@ model Order {
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
-  gig      Gig     @relation(fields: [gigId],    references: [id])
+  gig      Gig      @relation(fields: [gigId], references: [id])
   gigId    String
-  buyer    User    @relation("BuyerOrders",  fields: [buyerId],  references: [id])
+  buyer    User     @relation("BuyerOrders", fields: [buyerId], references: [id])
   buyerId  String
-  seller   User    @relation("SellerOrders", fields: [sellerId], references: [id])
+  seller   User     @relation("SellerOrders", fields: [sellerId], references: [id])
   sellerId String
   payment  Payment?
   review   Review?
@@ -137,9 +138,9 @@ model Review {
   comment   String   @db.Text
   createdAt DateTime @default(now())
 
-  order    Order  @relation(fields: [orderId],  references: [id])
+  order    Order  @relation(fields: [orderId], references: [id])
   orderId  String @unique
-  gig      Gig    @relation(fields: [gigId],    references: [id])
+  gig      Gig    @relation(fields: [gigId], references: [id])
   gigId    String
   author   User   @relation(fields: [authorId], references: [id])
   authorId String
@@ -162,13 +163,13 @@ model PasswordResetToken {
 }
 
 model PaymentLog {
-  id            String   @id @default(cuid())
-  paymentId     String
-  action        String
-  performedBy   String
-  ipAddress     String?
-  userAgent     String?
-  timestamp     DateTime @default(now())
+  id          String   @id @default(cuid())
+  paymentId   String
+  action      String
+  performedBy String
+  ipAddress   String?
+  userAgent   String?
+  timestamp   DateTime @default(now())
 
   @@index([paymentId])
 }

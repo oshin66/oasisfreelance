@@ -8,12 +8,13 @@ interface PaymentModalProps {
   isOpen: boolean
   onClose: () => void
   amount: number
+  orderId: string
   onSuccess: () => void
 }
 
 type Stage = 'qr' | 'uploading' | 'pending'
 
-export default function PaymentModal({ isOpen, onClose, amount, onSuccess }: PaymentModalProps) {
+export default function PaymentModal({ isOpen, onClose, amount, orderId, onSuccess }: PaymentModalProps) {
   const [stage, setStage] = useState<Stage>('qr')
   const [txnId, setTxnId] = useState('')
   const [screenshot, setScreenshot] = useState<File | null>(null)

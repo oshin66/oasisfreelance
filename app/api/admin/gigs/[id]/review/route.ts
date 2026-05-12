@@ -3,24 +3,17 @@ import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
 import { ok, err, unauthorized, forbidden, notFound, serverError } from '@/lib/apiHelpers'
-import { rateLimit, extractIp } from '@/lib/rateLimit'
 import { z } from 'zod'
 
 const ReviewSchema = z.object({
-  action:   z.enum(['approve', 'reject']),
-  feedback: z.string().optional(),
+  action: z.enum(['approve', 'reject']),
 })
 
-// ── PATCH /api/admin/gigs/[id]/review ────────────────────────────────────
-// Admin: approve → PUBLISHED, reject → REJECTED
-export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    // 1. Rate Limit (Layer 2)
-    const ip = await extractIp()
-    const limiter = await rateLimit('admin', ip, req.nextUrl.pathname)
-    if (!limiter.allowed) return err('Too many requests. Please wait.', 429)
-
-    // 2. Authentication & Authorization (Layer 1 & 4)
     const session = await getSession()
     if (!session)                 return unauthorized()
     if (session.role !== 'ADMIN') return forbidden()

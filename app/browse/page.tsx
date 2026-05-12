@@ -9,10 +9,24 @@ import GigCard from '@/components/gig/GigCard'
 import FilterSidebar from '@/components/gig/FilterSidebar'
 import type { Gig } from '@/types'
 
-const SORT_OPTIONS = ['Newest','Best Rated','Lowest Price','Highest Price']
+interface Filters {
+  category: string
+  techStack: string[]
+  budgetMin: number
+  budgetMax: number
+  deliveryDays: number
+}
 
-interface Filters { category:string; techStack:string[]; budgetMin:number; budgetMax:number; deliveryDays:number }
-const DEFAULT: Filters = { category:'All', techStack:[], budgetMin:0, budgetMax:100000, deliveryDays:0 }
+const DEFAULT: Filters = {
+  category: 'All',
+  techStack: [],
+  budgetMin: 0,
+  budgetMax: 100000,
+  deliveryDays: 0
+}
+
+const SORT_OPTIONS = ['Newest', 'Best Rated', 'Lowest Price', 'Highest Price']
+
 export default function BrowsePage() {
   return (
     <Suspense fallback={

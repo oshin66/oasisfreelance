@@ -8,9 +8,8 @@ import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
 import type { Gig } from '@/types'
 
-export default function GigPage({ params: paramsPromise }: { params: Promise<{ id: string }> }) {
-  const params = use(paramsPromise)
-  const id = params.id
+export default function GigPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const [gig, setGig] = useState<Gig | null>(null)
   const [loading, setLoading] = useState(true)
   const [activePkg, setActivePkg] = useState<'basic' | 'standard' | 'premium'>('standard')
@@ -33,19 +32,15 @@ export default function GigPage({ params: paramsPromise }: { params: Promise<{ i
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gigId: id, package: activePkg })  // lowercase — matches Zod enum
+        body: JSON.stringify({
+          gigId: gig.id,
+          tier: activePkg,
+          price: activePkg === 'basic' ? gig.basicPrice : activePkg === 'standard' ? gig.standardPrice : gig.premiumPrice
+        })
       })
       if (res.ok) {
         const d = await res.json()
-        const order = d.order
-        const price = activePkg === 'basic' ? gig.basicPrice :
-                      activePkg === 'standard' ? gig.standardPrice : gig.premiumPrice
-
-        if (price === 0 && order?.deliveryFile) {
-          window.location.href = order.deliveryFile
-        } else {
-          window.location.href = `/checkout?gigId=${id}&tier=${activePkg}&price=${price}&orderId=${order?.id || ''}`
-        }
+        window.location.href = `/checkout?orderId=${d.order.id}&gigId=${gig.id}&tier=${activePkg}&price=${d.order.price}`
       } else {
         const d = await res.json()
         if (d.error?.includes('Unauthorized') || d.error?.includes('unauthorized')) {
@@ -153,13 +148,13 @@ export default function GigPage({ params: paramsPromise }: { params: Promise<{ i
                         A demo file has been provided for this gig.
                       </p>
                       <Button variant="outline" size="sm" onClick={() => {
-                        const demoUrl = gig.demoUrl
+                        const demoUrl = gig?.demoUrl
                         if (!demoUrl) return
 
                         if (demoUrl.startsWith('data:')) {
                            const link = document.createElement('a')
                            link.href = demoUrl
-                           link.download = `demo-${gig.id.slice(-6)}`
+                           link.download = `demo-${gig?.id.slice(-6)}`
                            link.click()
                         } else {
                            window.open(demoUrl, '_blank')

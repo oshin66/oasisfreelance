@@ -11,6 +11,7 @@ import { toBase64 } from '@/lib/fileUtils'
 
 const UPI_ID   = 'craftsmanship.oasis@upi'
 const UPI_NAME = 'Craftsmanship Oasis'
+
 type PaymentStep = 'summary' | 'payment' | 'pending'
 type CheckoutGig = {
   title: string
@@ -19,12 +20,12 @@ type CheckoutGig = {
 }
 
 function CheckoutInner() {
-  const params      = useSearchParams()
-  const gigId       = params.get('gigId')
-  const tier        = params.get('tier') ?? 'standard'
-  const price       = Number(params.get('price') ?? 7000)
-  const orderId     = params.get('orderId')
-  
+  const searchParams = useSearchParams()
+  const gigId   = searchParams.get('gigId')
+  const orderId = searchParams.get('orderId')
+  const tier    = searchParams.get('tier') || 'basic'
+  const price   = parseInt(searchParams.get('price') || '0')
+
   const [gig, setGig]         = useState<CheckoutGig | null>(null)
   const [step, setStep]       = useState<PaymentStep>('summary')
   const [txnId, setTxnId]     = useState('')
@@ -173,7 +174,6 @@ function CheckoutInner() {
                         <rect x="114" y="18" width="28" height="28" fill="#1B3D2F"/>
                         <rect x="10" y="106" width="44" height="44" fill="none" stroke="#1B3D2F" strokeWidth="3"/>
                         <rect x="18" y="114" width="28" height="28" fill="#1B3D2F"/>
-                        {/* Proxy Pattern */}
                         {Array.from({ length: 48 }).map((_, i) => (
                           <rect key={i} 
                             x={60 + (i % 8) * 10} 
@@ -181,7 +181,6 @@ function CheckoutInner() {
                             width="6" height="6" fill="#1B3D2F" opacity={((i%2)===0) ? 0.8 : 0.3} 
                           />
                         ))}
-                        {/* Oasis Logo in Center */}
                         <rect x="65" y="65" width="30" height="30" fill="white" stroke="#1B3D2F" strokeWidth="0.5"/>
                         <path d="M80 72L86 78v8L80 92L74 86V78z" stroke="#1B3D2F" strokeWidth="0.5" fill="none"/>
                       </svg>

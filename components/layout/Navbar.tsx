@@ -11,20 +11,16 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [isSellerToggle, setIsSellerToggle] = useState(false)
 
-  const userName = user?.name
   const userRole = user?.role
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[400] border-b border-[var(--line)] glass-surface">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-6">
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="w-6 h-6 border border-[var(--forest)] flex items-center justify-center">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M6 1L11 4v4L6 11 1 8V4z" stroke="var(--forest)" strokeWidth="0.75" fill="none"/>
-              <circle cx="6" cy="6" r="1.5" fill="var(--forest)" opacity="0.6"/>
-            </svg>
+        <Link href="/" className="flex items-center gap-3 shrink-0 group">
+          <div className="w-9 h-9 relative overflow-hidden rounded-md border border-[var(--line)] bg-[var(--paper-dark)]">
+            <img src="/logo.png" alt="Craftsmanship Oasis" className="w-full h-full object-cover" />
           </div>
-          <span className="font-display text-[15px] tracking-[2px] uppercase text-[var(--forest)] hidden sm:block">
+          <span className="font-display text-[15px] tracking-[2px] uppercase text-[var(--forest)] hidden sm:block group-hover:text-[var(--forest-light)] transition-colors">
             Craftsmanship <span className="font-light text-[var(--grey)]">Oasis</span>
           </span>
         </Link>
@@ -66,15 +62,15 @@ export default function Navbar() {
           {userRole === 'BUYER' && (
             <Link href="/dashboard/buyer"><Button variant="outline" size="sm">My Orders</Button></Link>
           )}
+          
           {user && (
             <Link href="/settings" aria-label="Settings">
-              <button
-                type="button"
-                className="w-9 h-9 border border-[var(--line)] glass-surface-soft rounded-[10px] flex items-center justify-center hover:border-[var(--forest)] transition-colors"
+              <div
+                className="w-9 h-9 border border-[var(--line)] glass-surface-soft rounded-[10px] flex items-center justify-center hover:border-[var(--forest)] transition-colors cursor-pointer"
                 title="Settings"
               >
                 <SettingsIcon size={16} />
-              </button>
+              </div>
             </Link>
           )}
 
@@ -85,10 +81,10 @@ export default function Navbar() {
             </>
           )}
 
-          {user && userName && (
+          {user && (
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 bg-[var(--forest)] flex items-center justify-center text-[var(--paper)] text-[11px] font-medium uppercase font-[Jost]">
-                {userName.charAt(0)}
+                {user.name.charAt(0)}
               </div>
               <button
                 onClick={async () => {
@@ -129,12 +125,8 @@ export default function Navbar() {
               <Link href="/auth/register" className="text-sm text-[var(--forest)] tracking-wide font-medium">Join Free</Link>
             </>
           )}
-          {user && (
-            <>
-              <Link href={user.role === 'SELLER' ? '/dashboard/seller' : '/dashboard/buyer'} className="text-sm text-[var(--forest)]">My Dashboard</Link>
-              <Link href="/settings" className="text-sm text-[var(--grey)] hover:text-[var(--forest)] tracking-wide">Settings</Link>
-            </>
-          )}
+          {user && <Link href={user.role === 'SELLER' ? '/dashboard/seller' : '/dashboard/buyer'} className="text-sm text-[var(--forest)]">My Dashboard</Link>}
+          {user && <Link href="/settings" className="text-sm text-[var(--grey)] hover:text-[var(--forest)] tracking-wide">Settings</Link>}
         </div>
       )}
     </nav>

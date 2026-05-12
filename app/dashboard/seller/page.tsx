@@ -182,7 +182,6 @@ export default function SellerDashboard() {
           </div>
         ) : (
           <>
-            {/* ORDERS TAB */}
             {activeTab === 'orders' && (
               <div className="space-y-4 animate-slide-up">
                 {activeProjects.length === 0 ? (
@@ -237,16 +236,16 @@ export default function SellerDashboard() {
                             <Upload size={12}/> Deliver Work
                           </Button>
                         )}
-                          <Button variant="outline" size="sm" onClick={() => {
-                            window.location.href = `mailto:${order.buyer.email}?subject=${encodeURIComponent(`Order Update: ${order.gig.title}`)}`
-                          }}>Message Buyer</Button>
+                        <Button variant="outline" size="sm" onClick={() => {
+                          window.location.href = `mailto:${order.buyer.email}?subject=${encodeURIComponent(`Order Update: ${order.gig.title}`)}`
+                        }}>Message Buyer</Button>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-            {/* HISTORY TAB */}
+
             {activeTab === 'history' && (
               <div className="space-y-4 animate-slide-up">
                 {orders.filter(o => ['COMPLETED','CANCELLED','DELIVERED'].includes(o.status)).length === 0 ? (
@@ -274,10 +273,13 @@ export default function SellerDashboard() {
               </div>
             )}
 
-            {/* GIGS TAB */}
             {activeTab === 'gigs' && (
               <div className="space-y-4 animate-slide-up">
-                {gigs.map(gig => {
+                {gigs.length === 0 ? (
+                   <div className="text-center py-20 border-[0.5px] border-dashed border-[var(--line)]">
+                    <p className="font-[Jost] text-[13px] text-[var(--grey-light)]">You haven't created any gigs yet.</p>
+                  </div>
+                ) : gigs.map(gig => {
                   const badge = GIG_STATUS_BADGE[gig.status]
                   return (
                     <div key={gig.id} className="border-[0.5px] border-[var(--line)] bg-[var(--paper)] hover:border-[var(--forest)]/30 transition-colors p-5 flex items-center gap-5">
@@ -303,17 +305,10 @@ export default function SellerDashboard() {
                     </div>
                   )
                 })}
-                <Link href="/dashboard/seller/create-gig">
-                  <div className="border-[0.5px] border-dashed border-[var(--grey-light)] p-8 text-center cursor-pointer hover:border-[var(--forest)] transition-colors group">
-                    <Plus size={20} className="mx-auto mb-2 text-[var(--grey-light)] group-hover:text-[var(--forest)] transition-colors"/>
-                    <p className="text-[12px] text-[var(--grey)] font-[Jost]">Add a new gig</p>
-                  </div>
-                </Link>
               </div>
             )}
           </>
         )}
-
       </div>
 
       {/* Deliver Work Modal */}
@@ -334,7 +329,6 @@ export default function SellerDashboard() {
         onConfirm={handleDeleteGig}
         onCancel={() => setDeleteConfirm(null)}
       />
-
     </div>
   )
 }
@@ -347,8 +341,7 @@ function DeliverForm({ onSubmit }: { onSubmit: (url: string) => void }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    // In a real app, we'd upload the file and get a URL.
-    // Here we'll just mock it with the filename.
+    // Mock upload
     await new Promise(r => setTimeout(r, 800))
     setLoading(false)
     onSubmit(file ? `https://storage.co.in/deliveries/${file.name}` : 'https://storage.co.in/deliveries/project.zip')

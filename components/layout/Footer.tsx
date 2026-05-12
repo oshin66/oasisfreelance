@@ -15,11 +15,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-6 h-6 border border-[var(--forest)] flex items-center justify-center">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M6 1L11 4v4L6 11 1 8V4z" stroke="var(--forest)" strokeWidth="0.75" fill="none"/>
-                  <circle cx="6" cy="6" r="1.5" fill="var(--forest)" opacity="0.6"/>
-                </svg>
+              <div className="w-7 h-7 relative overflow-hidden rounded-md border border-[var(--line)]">
+                <img src="/logo.png" alt="Craftsmanship Oasis" className="w-full h-full object-cover" />
               </div>
               <span className="font-display text-[13px] tracking-[2px] uppercase text-[var(--forest)]">C·Oasis</span>
             </div>

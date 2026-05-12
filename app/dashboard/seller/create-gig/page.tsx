@@ -30,14 +30,12 @@ const INIT: GigForm = {
   standardPrice: '', standardDesc: '',
   premiumPrice: '', premiumDesc: '',
   deliveryDays: '7', thumbnail: null,
-  demo: null,
-  demoLink: '',
-  freeDownloadUrl: '',
+  demo: null, demoLink: '', freeDownloadUrl: ''
 }
 
-export default function CreateGigPage() {
-  useAuth('SELLER')
+export default function CreateGig() {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuth('SELLER')
   const [step, setStep]             = useState<Step>(1)
   const [form, setForm]             = useState<GigForm>(INIT)
   const [loading, setLoading]       = useState(false)
@@ -100,6 +98,8 @@ export default function CreateGigPage() {
       setLoading(false)
     }
   }
+
+  if (authLoading) return null
 
   return (
     <div className="min-h-screen glass-page">
@@ -280,32 +280,20 @@ export default function CreateGigPage() {
               </select>
             </div>
 
-            {Number(form.basicPrice) === 0 && (
-              <div className="mb-8 p-6 glass-surface-soft rounded-[10px] animate-fade-in">
-                <label className="block text-[9px] uppercase tracking-[2.5px] text-[var(--forest)] mb-2 font-[Jost] font-medium">Free Download URL (Direct ZIP Link) *</label>
-                <input className="input-underline" placeholder="https://github.com/user/repo/archive/refs/heads/main.zip"
-                  value={form.freeDownloadUrl} onChange={e => set('freeDownloadUrl', e.target.value)}/>
-                <p className="text-[10px] text-[var(--grey)] mt-2 font-[Jost] font-light">
-                  Required for free gigs. Users will be redirected here immediately after clicking &quot;Buy&quot;.
-                </p>
-              </div>
-            )}
-
             <div className="flex justify-between pt-4">
-              <Button variant="outline" size="md" onClick={() => setStep(1)}>← Back</Button>
+              <Button variant="outline" size="md" onClick={() => setStep(1)}>← Overview</Button>
               <Button size="lg" onClick={() => setStep(3)}
-                disabled={!form.basicPrice || !form.standardPrice || !form.premiumPrice}>
-                Review & Publish <ChevronRight size={13}/>
+                disabled={!form.basicPrice || !form.basicDesc}>
+                Next: Publish <ChevronRight size={13}/>
               </Button>
             </div>
           </div>
         )}
 
-        {/* STEP 3: Review & Publish */}
+        {/* STEP 3: Publish */}
         {step === 3 && (
-          <div className="animate-rise space-y-6 glass-panel rounded-[12px] p-7">
-            {/* Preview card */}
-            <div className="glass-surface rounded-[10px] p-6">
+          <div className="animate-rise space-y-8">
+            <div className="glass-panel rounded-[12px] p-7">
               <div className="h-[2px] bg-[var(--forest)] -mx-6 -mt-6 mb-5"/>
               <div className="flex items-start gap-3 mb-4">
                 {form.category && <span className="text-[9px] px-2 py-0.5 border border-[var(--forest)] text-[var(--forest)] uppercase tracking-wider font-[Jost]">{form.category}</span>}
