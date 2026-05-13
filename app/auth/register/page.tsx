@@ -137,8 +137,8 @@ export default function RegisterPage() {
         <div className="absolute bottom-0 left-0 w-96 h-96 border border-white/5 rounded-full -ml-48 -mb-48" />
 
         <Link href="/" className="flex items-center gap-3">
-          <div className="h-8 px-1.5 relative overflow-hidden rounded-md border border-white/40 glass-surface-soft bg-white/10 flex items-center justify-center">
-            <img src="/logo.png" alt="Craftsmanship Oasis" className="h-5 w-auto object-contain brightness-0 invert" />
+          <div className="h-8 px-2 relative overflow-hidden rounded-md border border-white/40 glass-surface bg-white/80 flex items-center justify-center">
+            <img src="/logo.png" alt="Craftsmanship Oasis" className="h-5 w-auto object-contain" />
           </div>
           <span className="font-display text-[14px] tracking-[2px] uppercase text-white">
             Craftsmanship <span className="opacity-40">Oasis</span>
