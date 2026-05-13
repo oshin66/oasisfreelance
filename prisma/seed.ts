@@ -16,11 +16,11 @@ async function hashPassword(password: string): Promise<string> {
 async function main() {
   console.log('🌱 Seeding...')
 
-  const pass = await hashPassword('password123')
+  const pass = await hashPassword('Admin@12345')
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@co.in' },
-    update: {},
+    update: { password: pass },
     create: {
       name: 'Admin',
       email: 'admin@co.in',
@@ -31,7 +31,7 @@ async function main() {
 
   const seller = await prisma.user.upsert({
     where: { email: 'seller@co.in' },
-    update: {},
+    update: { password: pass },
     create: {
       name: 'John Seller',
       email: 'seller@co.in',
@@ -44,7 +44,7 @@ async function main() {
 
   const buyer = await prisma.user.upsert({
     where: { email: 'buyer@co.in' },
-    update: {},
+    update: { password: pass },
     create: {
       name: 'Jane Buyer',
       email: 'buyer@co.in',
