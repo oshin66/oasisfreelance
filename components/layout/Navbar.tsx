@@ -17,10 +17,10 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-[400] border-b border-[var(--line)] glass-surface">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center gap-6">
         <Link href="/" className="flex items-center gap-3 shrink-0 group">
-          <div className="w-9 h-9 relative overflow-hidden rounded-md border border-[var(--line)] bg-[var(--paper-dark)]">
-            <img src="/logo.png" alt="Craftsmanship Oasis" className="w-full h-full object-cover" />
+          <div className="h-10 px-2.5 relative overflow-hidden rounded-lg border border-[var(--forest-mid)]/20 glass-surface-soft bg-white/40 flex items-center justify-center">
+            <img src="/logo.png" alt="Craftsmanship Oasis" className="h-7 w-auto object-contain" />
           </div>
-          <span className="font-display text-[15px] tracking-[2px] uppercase text-[var(--forest)] hidden sm:block group-hover:text-[var(--forest-light)] transition-colors">
+          <span className="font-display text-[16px] tracking-[2px] uppercase text-[var(--forest)] hidden sm:block group-hover:text-[var(--forest-light)] transition-colors">
             Craftsmanship <span className="font-light text-[var(--grey)]">Oasis</span>
           </span>
         </Link>

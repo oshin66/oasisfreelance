@@ -136,14 +136,11 @@ export default function RegisterPage() {
         <div className="absolute top-0 right-0 w-64 h-64 border border-white/5 rounded-full -mr-32 -mt-32" />
         <div className="absolute bottom-0 left-0 w-96 h-96 border border-white/5 rounded-full -ml-48 -mb-48" />
 
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-6 h-6 border border-white/30 flex items-center justify-center">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-              <path d="M6 1L11 4v4L6 11 1 8V4z" stroke="white" strokeWidth="0.75" fill="none" opacity="0.8"/>
-              <circle cx="6" cy="6" r="1.5" fill="white" opacity="0.5"/>
-            </svg>
+        <Link href="/" className="flex items-center gap-3">
+          <div className="h-8 px-1.5 relative overflow-hidden rounded-md border border-white/40 glass-surface-soft bg-white/10 flex items-center justify-center">
+            <img src="/logo.png" alt="Craftsmanship Oasis" className="h-5 w-auto object-contain brightness-0 invert" />
           </div>
-          <span className="font-display text-[13px] tracking-[2px] uppercase text-white">
+          <span className="font-display text-[14px] tracking-[2px] uppercase text-white">
             Craftsmanship <span className="opacity-40">Oasis</span>
           </span>
         </Link>
@@ -175,11 +172,8 @@ export default function RegisterPage() {
 
           {/* Mobile logo */}
           <Link href="/" className="flex items-center gap-2 mb-8 lg:hidden">
-            <div className="w-6 h-6 border border-[var(--forest)] flex items-center justify-center">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                <path d="M6 1L11 4v4L6 11 1 8V4z" stroke="var(--forest)" strokeWidth="0.75" fill="none"/>
-                <circle cx="6" cy="6" r="1.5" fill="var(--forest)" opacity="0.6"/>
-              </svg>
+            <div className="h-8 px-1.5 relative overflow-hidden rounded-md border border-[var(--forest-mid)]/20 glass-surface-soft bg-white/40 flex items-center justify-center">
+              <img src="/logo.png" alt="Craftsmanship Oasis" className="h-5 w-auto object-contain" />
             </div>
             <span className="font-display text-[13px] tracking-[2px] uppercase text-[var(--forest)]">Craftsmanship Oasis</span>
           </Link>

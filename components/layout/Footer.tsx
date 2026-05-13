@@ -14,11 +14,11 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 relative overflow-hidden rounded-md border border-[var(--line)]">
-                <img src="/logo.png" alt="Craftsmanship Oasis" className="w-full h-full object-cover" />
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-9 px-2 relative overflow-hidden rounded-lg border border-[var(--forest-mid)]/20 glass-surface-soft bg-white/40 flex items-center justify-center">
+                <img src="/logo.png" alt="Craftsmanship Oasis" className="h-6 w-auto object-contain" />
               </div>
-              <span className="font-display text-[13px] tracking-[2px] uppercase text-[var(--forest)]">C·Oasis</span>
+              <span className="font-display text-[15px] tracking-[2px] uppercase text-[var(--forest)]">C·Oasis</span>
             </div>
             <p className="text-[12px] text-[var(--grey)] leading-relaxed max-w-[180px]">
               The boutique tech forge where student engineers build for brands.

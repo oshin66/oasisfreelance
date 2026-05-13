@@ -49,11 +49,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-7 h-7 border border-[var(--forest)] flex items-center justify-center">
-              <svg width="13" height="13" viewBox="0 0 12 12" fill="none">
-                <path d="M6 1L11 4v4L6 11 1 8V4z" stroke="var(--forest)" strokeWidth="0.75" fill="none"/>
-                <circle cx="6" cy="6" r="1.5" fill="var(--forest)" opacity="0.6"/>
-              </svg>
+            <div className="h-8 px-1.5 relative overflow-hidden rounded-md border border-[var(--forest-mid)]/20 glass-surface-soft bg-white/40 flex items-center justify-center">
+              <img src="/logo.png" alt="Craftsmanship Oasis" className="h-5 w-auto object-contain" />
             </div>
             <span className="font-display text-[14px] tracking-[2px] uppercase text-[var(--forest)]">
               Craftsmanship Oasis
