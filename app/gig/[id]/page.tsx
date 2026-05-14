@@ -34,8 +34,7 @@ export default function GigPage({ params }: { params: Promise<{ id: string }> })
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           gigId: gig.id,
-          tier: activePkg,
-          price: activePkg === 'basic' ? gig.basicPrice : activePkg === 'standard' ? gig.standardPrice : gig.premiumPrice
+          package: activePkg
         })
       })
       if (res.ok) {

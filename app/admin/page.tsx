@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { CheckCircle, XCircle, Clock, Eye, Shield, Package, TrendingUp, RefreshCw } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, Eye, Shield, Package, TrendingUp, RefreshCw, Trash2, RotateCcw, AlertTriangle } from 'lucide-react'
 import Navbar from '@/components/layout/Navbar'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
@@ -27,7 +27,7 @@ interface LiveOrder {
   seller: { id: string; name: string }
 }
 interface LiveUser {
-  id: string; name: string; email: string; role: string; isSeller: boolean; createdAt: string
+  id: string; name: string; email: string; role: string; isSeller: boolean; isActive: boolean; deletedAt: string | null; createdAt: string
 }
 
 const ORDER_BADGE: Record<string, { label: string; variant: 'forest'|'teal'|'grey'|'warning'|'danger' }> = {
@@ -52,6 +52,7 @@ export default function AdminPanel() {
   const [gigPreview, setGigPreview] = useState<PendingGig | null>(null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [toast, setToast]           = useState<{ msg: string; type: 'success'|'error' } | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<LiveUser | null>(null)
 
   const showToast = (msg: string, type: 'success'|'error') => setToast({ msg, type })
 
@@ -96,6 +97,31 @@ export default function AdminPanel() {
       setGigs(g => g.filter(x => x.id !== id))
       setGigPreview(null)
       showToast(action === 'approve' ? '✓ Gig approved and published.' : 'Gig rejected.', action === 'approve' ? 'success' : 'error')
+    } catch { showToast('Network error', 'error') }
+    finally { setActionLoading(null) }
+  }
+
+  const handleDeleteUser = async (user: LiveUser) => {
+    setActionLoading(user.id)
+    try {
+      const res = await fetch(`/api/admin/users/${user.id}`, { method: 'DELETE' })
+      const data = await res.json()
+      if (!res.ok) { showToast(data.error ?? 'Failed to delete user', 'error'); return }
+      setUsers(u => u.map(x => x.id === user.id ? { ...x, isActive: false, deletedAt: new Date().toISOString() } : x))
+      setDeleteConfirm(null)
+      showToast(`✓ ${user.name} has been deactivated.`, 'success')
+    } catch { showToast('Network error', 'error') }
+    finally { setActionLoading(null) }
+  }
+
+  const handleReactivateUser = async (user: LiveUser) => {
+    setActionLoading(user.id)
+    try {
+      const res = await fetch(`/api/admin/users/${user.id}`, { method: 'PATCH' })
+      const data = await res.json()
+      if (!res.ok) { showToast(data.error ?? 'Failed to reactivate user', 'error'); return }
+      setUsers(u => u.map(x => x.id === user.id ? { ...x, isActive: true, deletedAt: null } : x))
+      showToast(`✓ ${user.name} has been reactivated.`, 'success')
     } catch { showToast('Network error', 'error') }
     finally { setActionLoading(null) }
   }
@@ -307,24 +333,51 @@ export default function AdminPanel() {
           loading ? <Spinner/> : (
             <table className="w-full border-collapse">
               <thead><tr className="border-b border-[var(--line)]">
-                {['Name','Email','Role','Joined'].map(h => (
+                {['Name','Email','Role','Status','Joined','Actions'].map(h => (
                   <th key={h} className="text-left py-3 px-3 text-[9px] uppercase tracking-[2px] text-[var(--grey-light)] font-medium font-[Jost]">{h}</th>
                 ))}
               </tr></thead>
               <tbody>
                 {users.length === 0 ? (
-                  <tr><td colSpan={4} className="text-center py-12 text-[var(--grey-light)] font-[Jost] text-sm">No users found</td></tr>
+                  <tr><td colSpan={6} className="text-center py-12 text-[var(--grey-light)] font-[Jost] text-sm">No users found</td></tr>
                 ) : users.map(u => (
-                  <tr key={u.id} className="border-b border-[var(--line)] hover:bg-[var(--paper-dark)] transition-colors">
+                  <tr key={u.id} className={`border-b border-[var(--line)] hover:bg-[var(--paper-dark)] transition-colors ${!u.isActive ? 'opacity-50' : ''}`}>
                     <td className="py-4 px-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 bg-[var(--forest)] flex items-center justify-center text-[var(--paper)] text-[11px] font-medium shrink-0">{u.name.charAt(0).toUpperCase()}</div>
+                        <div className={`w-7 h-7 flex items-center justify-center text-[var(--paper)] text-[11px] font-medium shrink-0 ${u.isActive ? 'bg-[var(--forest)]' : 'bg-[var(--grey-light)]'}`}>{u.name.charAt(0).toUpperCase()}</div>
                         <span className="text-[13px] font-medium text-[var(--charcoal)] font-[Jost]">{u.name}</span>
                       </div>
                     </td>
                     <td className="py-4 px-3 text-[12px] text-[var(--grey)] font-mono-co">{u.email}</td>
                     <td className="py-4 px-3"><Badge variant={u.role==='ADMIN'?'danger':u.isSeller?'forest':'teal'} size="sm">{u.role==='ADMIN'?'Admin':u.isSeller?'Seller':'Buyer'}</Badge></td>
+                    <td className="py-4 px-3">
+                      {u.isActive
+                        ? <Badge variant="forest" size="sm">Active</Badge>
+                        : <Badge variant="danger" size="sm">Deactivated</Badge>
+                      }
+                    </td>
                     <td className="py-4 px-3 text-[11px] text-[var(--grey-light)] font-[Jost]">{new Date(u.createdAt).toLocaleDateString('en-IN')}</td>
+                    <td className="py-4 px-3">
+                      {u.role !== 'ADMIN' && (
+                        u.isActive ? (
+                          <button
+                            onClick={() => setDeleteConfirm(u)}
+                            disabled={actionLoading === u.id}
+                            className="flex items-center gap-1.5 text-[10px] uppercase tracking-[1.5px] text-red-500 hover:text-red-700 font-medium font-[Jost] transition-colors disabled:opacity-50"
+                          >
+                            <Trash2 size={12}/> Delete
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleReactivateUser(u)}
+                            disabled={actionLoading === u.id}
+                            className="flex items-center gap-1.5 text-[10px] uppercase tracking-[1.5px] text-[var(--forest)] hover:text-[var(--forest-light)] font-medium font-[Jost] transition-colors disabled:opacity-50"
+                          >
+                            <RotateCcw size={12}/> {actionLoading === u.id ? 'Loading…' : 'Reactivate'}
+                          </button>
+                        )
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -355,6 +408,40 @@ export default function AdminPanel() {
             <div className="pt-4 border-t border-[var(--line)] flex gap-3">
               <Button size="md" className="flex-1" loading={actionLoading===gigPreview.id} onClick={() => handleGig(gigPreview.id,'approve')}><CheckCircle size={13}/> Approve & Publish</Button>
               <Button variant="danger" size="md" loading={actionLoading===gigPreview.id} onClick={() => handleGig(gigPreview.id,'reject')}><XCircle size={13}/> Reject</Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Delete user confirmation modal */}
+      <Modal isOpen={!!deleteConfirm} onClose={() => setDeleteConfirm(null)} title="Delete User Account" size="sm">
+        {deleteConfirm && (
+          <div className="space-y-5">
+            <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-[10px]">
+              <AlertTriangle size={18} className="text-red-500 shrink-0 mt-0.5"/>
+              <div>
+                <p className="text-[13px] font-medium text-red-800 font-[Jost] mb-1">This action will:</p>
+                <ul className="text-[12px] text-red-700 font-[Jost] font-light space-y-1 list-disc list-inside">
+                  <li>Deactivate <strong>{deleteConfirm.name}</strong>&apos;s account</li>
+                  <li>Invalidate all their active sessions</li>
+                  <li>Archive all their published gigs</li>
+                  <li>Block them from logging in</li>
+                </ul>
+              </div>
+            </div>
+            <div className="p-4 bg-[var(--paper-dark)] border-[0.5px] border-[var(--line)]">
+              <div className="grid grid-cols-2 gap-3 text-[12px] font-[Jost]">
+                <div><span className="text-[var(--grey-light)] font-light">Name</span><br/><span className="font-medium text-[var(--charcoal)]">{deleteConfirm.name}</span></div>
+                <div><span className="text-[var(--grey-light)] font-light">Email</span><br/><span className="font-mono-co text-[var(--charcoal)]">{deleteConfirm.email}</span></div>
+                <div><span className="text-[var(--grey-light)] font-light">Role</span><br/><span className="font-medium text-[var(--charcoal)]">{deleteConfirm.role}</span></div>
+                <div><span className="text-[var(--grey-light)] font-light">Joined</span><br/><span className="text-[var(--charcoal)]">{new Date(deleteConfirm.createdAt).toLocaleDateString('en-IN')}</span></div>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Button variant="outline" size="md" className="flex-1" onClick={() => setDeleteConfirm(null)}>Cancel</Button>
+              <Button variant="danger" size="md" className="flex-1" loading={actionLoading === deleteConfirm.id} onClick={() => handleDeleteUser(deleteConfirm)}>
+                <Trash2 size={13}/> Delete Account
+              </Button>
             </div>
           </div>
         )}

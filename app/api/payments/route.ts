@@ -10,9 +10,8 @@ import { z } from 'zod'
 
 const PaymentSchema = z.object({
   orderId:       z.string().cuid(),
-  amount:        z.number().int().min(1),
   transactionId: z.string().min(5).max(100),
-  screenshot:    z.string().optional(), // In production, limit size/validate format
+  screenshot:    z.string().optional(),
 }).strict()
 
 export async function POST(req: NextRequest) {
@@ -33,7 +32,7 @@ export async function POST(req: NextRequest) {
     const parsed = PaymentSchema.safeParse(body)
     if (!parsed.success) return err(parsed.error.issues[0].message, 422)
 
-    const { orderId, amount, transactionId, screenshot } = parsed.data
+    const { orderId, transactionId, screenshot } = parsed.data
 
     const safeTxnId = sanitizeTransactionId(transactionId)
 
@@ -50,6 +49,9 @@ export async function POST(req: NextRequest) {
     const order = await prisma.order.findUnique({ where: { id: orderId } })
     if (!order) return notFound('Order')
 
+    // Use the order's price from the database (prevents client-side price manipulation)
+    const amount = order.price
+
     // 1. Strict Ownership checking
     if (order.buyerId !== session.userId) {
       await securityLog({ event: 'UNAUTHORIZED_ACCESS', message: 'Attempt to pay for unowned order', userId: session.userId, targetId: orderId, ip })
@@ -61,14 +63,7 @@ export async function POST(req: NextRequest) {
       return err('Order is not in PENDING_PAYMENT state. Action rejected.', 400)
     }
 
-    // 3. Mathematical Verification (allow 5% margin of error maximum for weird taxes)
-    const maxAllowed = order.price * 1.05
-    const minAllowed = order.price * 0.95
-    if (amount < minAllowed || amount > maxAllowed) {
-      return err(`Amount mismatch. Expected ~${order.price}, got ${amount}.`, 400)
-    }
-
-    // 4. Atomic Database Transaction (Ensures no desync between payment table and order table)
+    // 3. Atomic Database Transaction (Ensures no desync between payment table and order table)
     const result = await prisma.$transaction(async (tx) => {
       const payment = await tx.payment.create({
         data: {

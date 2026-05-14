@@ -43,6 +43,14 @@ function CheckoutInner() {
     }
   }, [gigId])
 
+  // Keep session alive during checkout (JWT expires in 15 min)
+  useEffect(() => {
+    const refresh = () => fetch('/api/auth/refresh', { method: 'POST' }).catch(() => {})
+    refresh() // Refresh immediately on mount
+    const interval = setInterval(refresh, 10 * 60 * 1000) // Refresh every 10 min
+    return () => clearInterval(interval)
+  }, [])
+
   const platformFee = Math.round(price * 0.1)
   const total       = price + platformFee
 
@@ -56,6 +64,9 @@ function CheckoutInner() {
     if (!txnId.trim()) { setToast('Please enter your transaction ID'); return }
     setLoading(true)
     try {
+      // Refresh session token right before payment to prevent expiry
+      await fetch('/api/auth/refresh', { method: 'POST' }).catch(() => {})
+
       if (orderId) {
         let screenshotBase64 = null
         if (screenshot) {
